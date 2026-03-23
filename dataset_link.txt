@@ -1,0 +1,2 @@
+ที่ใช้ trained : https://universe.roboflow.com/house1-s3mt6/thai-lnpr-c6prf-g79k2/dataset/2
+ที่ไป fork มา : https://universe.roboflow.com/thai-car-detection-mboy6/thai-lnpr-c6prf/browse?queryText=&pageSize=50&startingIndex=0&browseQuery=true

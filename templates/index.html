@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlateScope OCR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sarabun:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="bg-ornament bg-1"></div>
+  <div class="bg-ornament bg-2"></div>
+
+  <main class="app-shell">
+    <section class="hero-card reveal-up">
+      <div class="brand-row">
+        <span class="brand-dot"></span>
+        <p>PlateScope OCR</p>
+      </div>
+      <h1>ระบบตรวจสอบป้ายทะเบียนรถ</h1>
+      <p class="hero-subtitle">อัปโหลดภาพจากมือถือหรือกล้องวงจร แล้วให้โมเดลอ่านหมายเลขทะเบียนพร้อมข้อมูลจังหวัดแบบเรียลไทม์</p>
+
+      <div class="hero-pills">
+        <span>YOLO OCR</span>
+        <span>Thai Plates</span>
+        <span>Fast Inference</span>
+      </div>
+    </section>
+
+    <section class="upload-card reveal-up-delay">
+      <form id="uploadForm" class="upload-form">
+        <input id="imageInput" name="image" type="file" accept="image/*" hidden>
+
+        <div class="source-switch" role="tablist" aria-label="เลือกแหล่งภาพ">
+          <button class="source-btn active" id="uploadModeBtn" type="button" data-mode="upload">อัปโหลดภาพ</button>
+          <button class="source-btn" id="cameraModeBtn" type="button" data-mode="camera">ถ่ายด้วยกล้อง</button>
+        </div>
+
+        <div class="source-panel" id="uploadPanel">
+          <label for="imageInput" class="dropzone" id="dropzone">
+            <div class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 16V5M12 5L8.5 8.5M12 5L15.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 14.5V16.25C6 17.7688 7.23122 19 8.75 19H15.25C16.7688 19 18 17.7688 18 16.25V14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h2>ลากรูปป้ายทะเบียนมาวางที่นี่</h2>
+            <p id="uploadHint">รองรับ JPG, PNG, WEBP หรือคลิกเพื่อเลือกรูป</p>
+          </label>
+        </div>
+
+        <section class="camera-panel hidden" id="cameraPanel" aria-live="polite">
+          <div class="camera-stage" id="cameraStage">
+            <video id="cameraPreview" class="camera-preview" autoplay playsinline muted></video>
+            <canvas id="cameraCanvas" class="camera-preview hidden"></canvas>
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <div class="upload-icon camera-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4.75 8.75C4.75 7.7835 5.5335 7 6.5 7H9L10.25 5.5H13.75L15 7H17.5C18.4665 7 19.25 7.7835 19.25 8.75V16.5C19.25 17.4665 18.4665 18.25 17.5 18.25H6.5C5.5335 18.25 4.75 17.4665 4.75 16.5V8.75Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <path d="M12 15.25C13.5188 15.25 14.75 14.0188 14.75 12.5C14.75 10.9812 13.5188 9.75 12 9.75C10.4812 9.75 9.25 10.9812 9.25 12.5C9.25 14.0188 10.4812 15.25 12 15.25Z" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+              </div>
+              <h2>เปิดกล้องเพื่อถ่ายภาพป้ายทะเบียน</h2>
+              <p id="cameraHint">เหมาะกับมือถือหรือโน้ตบุ๊กที่มีกล้อง และบน localhost สามารถใช้งานได้ทันที</p>
+            </div>
+          </div>
+
+          <div class="camera-actions">
+            <button class="secondary-btn" id="startCameraBtn" type="button">เปิดกล้อง</button>
+            <button class="secondary-btn hidden" id="captureBtn" type="button">ถ่ายภาพ</button>
+            <button class="secondary-btn hidden" id="retakeBtn" type="button">ถ่ายใหม่</button>
+          </div>
+        </section>
+
+        <div class="action-row">
+          <button class="submit-btn" type="submit">
+            <span class="btn-text">เริ่มตรวจสอบ</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+
+      <p class="status" id="statusText"></p>
+      <p class="note">ผลลัพธ์เป็นการประเมินจากโมเดล และอาจคลาดเคลื่อนในภาพที่เบลอหรือป้ายมีขนาดเล็กมาก</p>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="resultModal">
+    <div class="result-card">
+      <button class="close-btn" id="closeModal" type="button" aria-label="close">×</button>
+
+      <div class="preview-frame">
+        <img id="previewImage" class="preview" alt="ภาพที่อัปโหลด">
+      </div>
+
+      <section class="plate-result">
+        <p>ผลลัพธ์การอ่าน</p>
+        <h3 id="plateNumber">-</h3>
+      </section>
+
+      <section class="meta-grid">
+        <article>
+          <span>จังหวัด</span>
+          <strong id="province">-</strong>
+        </article>
+        <article>
+          <span>ประเภท</span>
+          <strong id="vehicleType">-</strong>
+        </article>
+        <article>
+          <span>สีป้าย</span>
+          <strong id="plateColor">-</strong>
+        </article>
+        <article>
+          <span>การใช้งาน</span>
+          <strong id="usage">-</strong>
+        </article>
+      </section>
+
+      <div class="result-foot">
+        <p class="confidence">ความมั่นใจเฉลี่ย <strong id="confidence">0</strong>%</p>
+        <button class="retry-btn" id="retryBtn" type="button">ตรวจสอบรูปใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# YOLO training runs (checkpoint + logs ใหญ่เกิน)
+runs/
+
+# Model weights — ignore ทั้งหมดยกเว้น best.pt
+*.pt
+!best.pt
+
+# Dataset images (ใหญ่เกิน push ไม่ไหว)
+LPR plate.v1i.yolov11/train/
+LPR plate.v1i.yolov11/valid/
+LPR plate.v1i.yolov11/test/
+*.cache
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Ultralytics
+.config/Ultralytics/

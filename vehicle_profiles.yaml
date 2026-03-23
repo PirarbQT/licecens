@@ -1,0 +1,26 @@
+﻿profiles:
+  unknown:
+    vehicle_type: "ไม่สามารถระบุได้"
+    plate_color: "ไม่สามารถระบุได้"
+    usage: "ไม่สามารถระบุได้"
+    aliases: []
+
+  car_private:
+    vehicle_type: "รถยนต์ส่วนบุคคล"
+    plate_color: "ขาว (ส่วนบุคคล)"
+    usage: "ส่วนบุคคล"
+    aliases:
+      - CAR
+      - CAR_PLATE
+      - AUTO
+      - PRIVATE_CAR
+
+  moto_private:
+    vehicle_type: "รถจักรยานยนต์ส่วนบุคคล"
+    plate_color: "ขาว (รถจักรยานยนต์)"
+    usage: "ส่วนบุคคล"
+    aliases:
+      - MOTO
+      - MOTORCYCLE
+      - MOTO_PLATE
+      - BIKE

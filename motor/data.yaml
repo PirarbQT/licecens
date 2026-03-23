@@ -1,0 +1,13 @@
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 97
+names: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A01', 'A02', 'A03', 'A04', 'A06', 'A07', 'A08', 'A09', 'A10', 'A12', 'A13', 'A14', 'A16', 'A18', 'A19', 'A20', 'A21', 'A22', 'A23', 'A24', 'A25', 'A26', 'A28', 'A30', 'A31', 'A32', 'A33', 'A34', 'A35', 'A36', 'A37', 'A38', 'A39', 'A40', 'A42', 'A43', 'A44', 'ATG', 'BETONG', 'BKK', 'CBI', 'CMI', 'CNT', 'CPM', 'CPN', 'CRI', 'KKN', 'KPT', 'KRI', 'KSN', 'LPG', 'LPN', 'MDH', 'MSN', 'NAN', 'NBI', 'NMA', 'NPT', 'NSN', 'PBI', 'PCH', 'PCT', 'PKN', 'PLK', 'PNA', 'PNB', 'PRE', 'PTE', 'PTN', 'PYO', 'RBR', 'RNG', 'RYG', 'SKM', 'SKN', 'SKW', 'SNK', 'SPB', 'SRI', 'SRN', 'SSK', 'STI', 'TAK', 'TRT', 'UBN', 'UTI', 'UTT']
+
+roboflow:
+  workspace: myproject-cg38b
+  project: car-nag5c
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/myproject-cg38b/car-nag5c/dataset/1
