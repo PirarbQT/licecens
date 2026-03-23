@@ -15,6 +15,25 @@
       - AUTO
       - PRIVATE_CAR
 
+  car_public:
+    vehicle_type: "รถยนต์สาธารณะ"
+    plate_color: "เหลือง (สาธารณะ)"
+    usage: "สาธารณะ"
+    aliases:
+      - PUBLIC_CAR
+      - TAXI
+      - SERVICE_CAR
+      - COMMERCIAL_CAR
+
+  car_auction:
+    vehicle_type: "รถยนต์ส่วนบุคคล"
+    plate_color: "ป้ายประมูล"
+    usage: "ส่วนบุคคล"
+    aliases:
+      - AUCTION
+      - AUCTION_CAR
+      - RED_PLATE
+
   moto_private:
     vehicle_type: "รถจักรยานยนต์ส่วนบุคคล"
     plate_color: "ขาว (รถจักรยานยนต์)"
