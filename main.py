@@ -1,32 +1,36 @@
 """
-YOLOv11 OCR Training Script — Thai License Plate Recognition
-Dataset: LPR plate.v1i.yolov11 (124 classes: digits 0-9, Thai characters, provinces)
+สคริปต์สำหรับเทรนโมเดล YOLO OCR ป้ายทะเบียนไทย
+ใช้กับ dataset ที่รวมรถยนต์และรถจักรยานยนต์ไว้แล้ว
 """
 
 from ultralytics import YOLO
 
-# --- Configuration ---
+# ค่าตั้งต้นหลักของการเทรน
 DATA_YAML = "merged_lpr_motor/data.yaml"
-MODEL = "yolo11n.pt"  # YOLOv11 nano (pretrained) — change to yolo11s/m/l/x for larger models
+MODEL = "yolo11n.pt"  # โมเดลตั้งต้นขนาดเล็ก ถ้าต้องการใหญ่ขึ้นเปลี่ยนเป็น s/m/l/x
 EPOCHS = 100
 IMG_SIZE = 640
-BATCH_SIZE = 16  # Adjust based on your GPU VRAM
-DEVICE = 0  # GPU device index (0 = first GPU)
+BATCH_SIZE = 16  # ปรับตาม VRAM ของ GPU
+DEVICE = 0  # เลือก GPU ตัวที่ต้องการใช้
 PROJECT = "runs/detect"
 NAME = "lpr_plate_ocr"
 
-# --- Learning Rate ---
-LR0 = 0.01             # Initial learning rate (SGD=0.01, Adam=0.001)
-LRF = 0.01             # Final learning rate factor (lr0 * lrf)
-OPTIMIZER = "auto"      # Optimizer: SGD, Adam, AdamW, NAdam, RAdam, RMSProp, auto
-WARMUP_EPOCHS = 3.0     # Warmup epochs
-WARMUP_MOMENTUM = 0.8   # Warmup initial momentum
-WARMUP_BIAS_LR = 0.1    # Warmup initial bias lr
-COS_LR = False          # Use cosine LR scheduler (otherwise linear)
+# ค่าที่เกี่ยวกับ learning rate และ optimizer
+LR0 = 0.01
+LRF = 0.01
+OPTIMIZER = "auto"
+WARMUP_EPOCHS = 3.0
+WARMUP_MOMENTUM = 0.8
+WARMUP_BIAS_LR = 0.1
+COS_LR = False
 
-# --- Train ---
+
+# ฟังก์ชันหลักสำหรับเริ่มเทรนโมเดล
 def main():
+    # โหลดโมเดลตั้งต้นจากไฟล์ pretrained
     model = YOLO(MODEL)
+
+    # สั่งเทรนด้วยค่าที่กำหนดด้านบน
     model.train(
         data=DATA_YAML,
         epochs=EPOCHS,
@@ -42,14 +46,17 @@ def main():
         warmup_momentum=WARMUP_MOMENTUM,
         warmup_bias_lr=WARMUP_BIAS_LR,
         cos_lr=COS_LR,
-        patience=20,       # Early stopping patience
-        save=True,          # Save checkpoints
-        save_period=10,     # Save every N epochs
-        plots=True,         # Generate training plots
+        patience=20,    # ถ้า metric ไม่ดีขึ้นตามช่วงนี้จะหยุดเทรนก่อน
+        save=True,      # บันทึก checkpoint ระหว่างเทรน
+        save_period=10, # บันทึกทุก ๆ 10 epoch
+        plots=True,     # สร้างกราฟสรุปผลการเทรน
         verbose=True,
     )
-    print("✅ Training complete!")
-    print(f"📁 Results saved to: {PROJECT}/{NAME}")
+
+    print("เทรนเสร็จเรียบร้อย")
+    print(f"ผลลัพธ์ถูกบันทึกไว้ที่: {PROJECT}/{NAME}")
+
 
 if __name__ == "__main__":
+    # เริ่มรันสคริปต์เทรนเมื่อเปิดไฟล์นี้ตรง ๆ
     main()
