@@ -39,3 +39,4 @@ Thumbs.db
 
 # Ultralytics
 .config/Ultralytics/
+picture_for_test_eval_report.json

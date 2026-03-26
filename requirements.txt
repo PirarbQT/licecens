@@ -8,7 +8,6 @@ filelock==3.20.0
 Flask==3.1.1
 fonttools==4.61.1
 fsspec==2025.12.0
-google-genai
 idna==3.11
 Jinja2==3.1.6
 kiwisolver==1.4.9

@@ -1,6 +1,6 @@
 # Thai License Plate OCR
 
-เว็บตรวจสอบป้ายทะเบียนจากภาพ โดยส่งรูปเข้า Gemini เพื่ออ่านหมายเลขทะเบียน จังหวัด และประเภทรถ
+เว็บตรวจสอบป้ายทะเบียนจากภาพ โดยใช้โมเดล YOLO OCR ในเครื่องจากไฟล์ `best.pt`
 
 ## ติดตั้ง
 
@@ -14,28 +14,6 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## ตั้งค่า Gemini API ผ่านไฟล์
-
-โปรเจกต์รองรับไฟล์ `.env` และ `.env.local` ที่โฟลเดอร์หลักของโปรเจกต์
-
-1. คัดลอกไฟล์ตัวอย่าง
-
-```powershell
-Copy-Item .env.example .env
-```
-
-2. แก้ค่าใน `.env`
-
-```env
-GEMINI_API_KEY=your_api_key_here
-GEMINI_MODEL=gemini-3.1-flash-lite-preview
-```
-
-หมายเหตุ:
-- ถ้ามีทั้ง `.env` และ `.env.local` ระบบจะอ่านทั้งสองไฟล์
-- ถ้าตั้ง environment variable ในเครื่องไว้แล้ว ค่านั้นจะมีลำดับความสำคัญสูงกว่าไฟล์
-- `.env` และ `.env.local` ถูกใส่ใน `.gitignore` แล้ว
-
 ## รันเว็บ
 
 ```bash
@@ -44,26 +22,56 @@ python app.py
 
 จากนั้นเปิดเบราว์เซอร์ที่ `http://127.0.0.1:5000`
 
-หน้าเว็บรองรับ 2 วิธี:
-- อัปโหลดไฟล์ภาพจากเครื่อง
-- เปิดกล้องจากเบราว์เซอร์เพื่อถ่ายภาพแล้วส่งเข้า OCR ทันที
+## วิธีใช้งาน
 
-หมายเหตุ: การเปิดกล้องผ่านเบราว์เซอร์ทำงานได้บน `localhost` หรือผ่าน `https`
+- อัปโหลดไฟล์ภาพจากเครื่อง
+- หรือเปิดกล้องจากเบราว์เซอร์เพื่อถ่ายภาพแล้วส่งเข้า OCR ทันที
+
+หมายเหตุ: ฟังก์ชันกล้องบนหน้าเว็บจะทำงานได้บน `localhost` หรือ `https`
 
 ## พฤติกรรมของระบบ
 
-- ฝั่งเว็บใช้ Gemini-only สำหรับการอ่านป้ายทะเบียน
-- ถ้ารูปไม่ชัด ระบบจะคืนค่า `-` หรือ `unknown` แทนการเดาแรงเกินไป
-- ประเภทรถที่หน้าเว็บแสดงจะ map จาก `vehicle_profiles.yaml`
-- ระบบพยายามแยก `รถยนต์ส่วนบุคคล`, `รถยนต์สาธารณะ`, `รถจักรยานยนต์`, และ `ป้ายประมูล`
+- หน้าเว็บส่งรูปเข้า backend Flask
+- backend ใช้โมเดล YOLO OCR ในเครื่องเพื่ออ่านป้ายทะเบียน
+- ระบบจะพยายามแยกเลขทะเบียน จังหวัด และประเภทรถจากผลตรวจจับ
+- ถ้ารูปไม่ชัด ระบบอาจคืนค่า `-` หรือ `unknown` แทนการเดา
 
-## ไฟล์ dataset และสคริปต์เดิม
+## ไฟล์ที่เกี่ยวข้อง
 
-โฟลเดอร์ dataset และสคริปต์เทรนเดิมยังอยู่ในโปรเจกต์ เช่น:
-- `LPR plate.v1i.yolov11`
-- `merged_lpr_motor`
-- `motor`
-- `main.py`
-- `test.py`
+- `app.py` สำหรับ backend และ OCR pipeline
+- `best.pt` สำหรับโมเดลที่ใช้ตรวจจับ
+- `vehicle_profiles.yaml` สำหรับ map ประเภทรถ สีป้าย และการใช้งาน
+- `main.py` สำหรับเทรนโมเดล
+- `test.py` สำหรับทดสอบโมเดล
+- `merge_datasets.py` สำหรับรวมชุดข้อมูล
 
-ถ้าต้องการกลับไปใช้โมเดล local OCR/YOLO ต้องแก้ `app.py` กลับเป็น pipeline เดิม
+## หมายเหตุเรื่อง `.env`
+
+โหมดปัจจุบันไม่ต้องใช้ API key แล้ว เพราะไม่ได้เรียก Gemini
+
+ไฟล์ `.env` และ `.env.example` ยังเก็บไว้ได้ แต่ไม่จำเป็นต่อการรันเว็บในโหมดนี้
+
+## ประเมินผลกับ `picture-for-test`
+
+ถ้าต้องการวัดว่าระบบเก่งขึ้นจริงหรือไม่ ให้ใช้ชุดไฟล์นี้:
+
+- [picture_for_test_ground_truth.csv](C:/Users/johnn/Downloads/Ai_licenses-main/picture_for_test_ground_truth.csv) สำหรับใส่คำตอบจริงของแต่ละรูป
+- [evaluate_picture_for_test.py](C:/Users/johnn/Downloads/Ai_licenses-main/evaluate_picture_for_test.py) สำหรับรันทดสอบแบบ batch
+
+วิธีใช้:
+
+```bash
+python evaluate_picture_for_test.py
+```
+
+สคริปต์จะ:
+
+- รัน `/api/detect` กับทุกรูปใน `picture-for-test`
+- เทียบผลกับ `picture_for_test_ground_truth.csv`
+- สรุป accuracy ใน terminal
+- เขียนรายงานละเอียดลง `picture_for_test_eval_report.json`
+
+หมายเหตุ:
+
+- ตอนนี้ใน CSV ถูก prefill แค่ `expected_vehicle_family` จากชื่อโฟลเดอร์
+- ถ้าต้องการวัดเลขทะเบียน จังหวัด สีป้าย และการใช้งานแบบจริงจัง ให้เติม column ที่เหลือเองก่อนรัน
